@@ -147,6 +147,9 @@ const init = () => {
       <button v-if="game.stage === 'start'" pl-4 pr-4 mt-4 border @click="init">
         play
       </button>
+      <button v-else pl-4 pr-4 mt-4 border @click="init">
+        restart
+      </button>
     </div>
   </div>
 </template>
