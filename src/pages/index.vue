@@ -1,11 +1,10 @@
 <script setup lang="ts">
 interface Item {
-  isKnow: boolean
-  value: string
-  isMine: boolean
-  mineNum: number
-  x: number
-  y: number
+  isKnowed: boolean //  是否已知
+  isMine: boolean // 是否是地雷
+  mineNum: number // 周围地雷数量
+  x: number // 横坐标
+  y: number // 纵坐标
 }
 
 const RATE = 0.2
@@ -24,12 +23,12 @@ const genterateMines = () => {
     for (let j = 0; j < data.value[i].length; j++) {
       const random = Math.random()
       const common = {
-        isKnow: true,
+        isKnowed: false,
         mineNum: -1,
         x: i,
         y: j,
       }
-      data.value[i][j] = random < RATE ? { ...common, value: 'X', isMine: true } : { ...common, value: '·', isMine: false, mineNum: 0 }
+      data.value[i][j] = random < RATE ? { ...common, isMine: true } : { ...common, isMine: false, mineNum: 0 }
     }
   }
 }
@@ -47,6 +46,9 @@ const directioins: number[][] = [
   [0, 1],
   [1, 1],
 ]
+/**
+ * 生成地雷，以及数字
+ */
 const computeMines = () => {
   for (let i = 0; i < data.value.length; i++) {
     for (let j = 0; j < data.value[i].length; j++) {
@@ -64,6 +66,9 @@ const computeMines = () => {
 }
 
 const spread = (item: Item): void => {
+  if (item)
+    item.isKnowed = true
+
   if (item?.mineNum === 0) {
     item.mineNum = -1
     for (let i = 0; i < directioins.length; i++) {
@@ -77,7 +82,7 @@ const spread = (item: Item): void => {
 }
 
 const click = (item: Item): void => {
-  item.isKnow = true
+  item.isKnowed = true
   if (item.isMine)
     alert('game over')
   else
@@ -85,6 +90,16 @@ const click = (item: Item): void => {
 }
 
 computeMines()
+
+const showContent = (item: Item): string => {
+  if (!item.isKnowed)
+    return ''
+  if (item.isMine)
+    return '💣'
+  if (item.mineNum === 0)
+    return ''
+  return item.mineNum.toString()
+}
 </script>
 
 <template>
@@ -93,8 +108,8 @@ computeMines()
     <br>
     <div inline-block border>
       <div v-for="(item, i) in data" :key="i">
-        <button v-for="(subItem, j) in item" :key="j" border="~ grey/10" w="10" h="10" va-top @click="() => click(subItem)">
-          {{ subItem.isMine ? 'X' : ((subItem.mineNum as number) > -1 ? subItem.mineNum : '') }}
+        <button v-for="(subItem, j) in item" :key="j" border="~" w="10" h="10" va-top @click="() => click(subItem)">
+          {{ showContent(subItem) }}
         </button>
       </div>
     </div>
