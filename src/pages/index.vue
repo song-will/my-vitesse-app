@@ -1,4 +1,9 @@
 <script setup lang="ts">
+interface Game {
+  stage: 'start' | 'play' | 'end'
+  isWin: boolean
+}
+
 interface Item {
   isKnowed: boolean //  是否已知
   isMine: boolean // 是否是地雷
@@ -8,6 +13,10 @@ interface Item {
 }
 
 const RATE = 0.2
+const game = reactive<Game>({
+  stage: 'start',
+  isWin: false,
+})
 
 const generateData = (Width: number, Height: number): Item[][] => {
   const data = new Array(Width)
@@ -32,7 +41,6 @@ const genterateMines = () => {
     }
   }
 }
-genterateMines()
 /**
  * 八个方向
  */
@@ -66,7 +74,7 @@ const computeMines = () => {
 }
 
 const spread = (item: Item): void => {
-  if (item)
+  if (item && !item.isMine)
     item.isKnowed = true
 
   if (item?.mineNum === 0) {
@@ -82,6 +90,8 @@ const spread = (item: Item): void => {
 }
 
 const click = (item: Item): void => {
+  if (!item)
+    return
   item.isKnowed = true
   if (item.isMine)
     alert('game over')
@@ -89,16 +99,35 @@ const click = (item: Item): void => {
     spread(item)
 }
 
-computeMines()
-
 const showContent = (item: Item): string => {
+  if (!item)
+    return ''
   if (!item.isKnowed)
     return ''
   if (item.isMine)
     return '💣'
   if (item.mineNum === 0)
     return ''
+  if (item.mineNum === -1)
+    return '👍'
   return item.mineNum.toString()
+}
+
+const initItems = () => {
+  for (let i = 0; i < data.value.length; i++) {
+    for (let j = 0; j < data.value[i].length; j++) {
+      const temp = data.value[i][j]
+      temp.isKnowed = false
+      temp.mineNum = -1
+    }
+  }
+}
+
+const init = () => {
+  game.stage = 'play'
+  genterateMines()
+  initItems()
+  computeMines()
 }
 </script>
 
@@ -112,6 +141,11 @@ const showContent = (item: Item): string => {
           {{ showContent(subItem) }}
         </button>
       </div>
+    </div>
+    <div>
+      <button v-if="game.stage === 'start'" pl-4 pr-4 mt-4 border @click="init">
+        play
+      </button>
     </div>
   </div>
 </template>
