@@ -90,13 +90,14 @@ const spread = (item: Item): void => {
 }
 
 const click = (item: Item): void => {
-  if (!item)
+  if (!item || game.stage === 'end')
     return
   item.isKnowed = true
-  if (item.isMine)
+  if (item.isMine) {
+    game.stage = 'end'
     alert('game over')
-  else
-    spread(item)
+  }
+  else { spread(item) }
 }
 
 const showContent = (item: Item): string => {
