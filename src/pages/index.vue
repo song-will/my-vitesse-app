@@ -3,7 +3,7 @@ interface Item {
   isKnow: boolean
   value: string
   isMine: boolean
-  mineNum?: number
+  mineNum: number
   x: number
   y: number
 }
@@ -25,6 +25,7 @@ const genterateMines = () => {
       const random = Math.random()
       const common = {
         isKnow: true,
+        mineNum: -1,
         x: i,
         y: j,
       }
@@ -89,10 +90,13 @@ computeMines()
 <template>
   <div>
     <div i-carbon-campsite text-4xl inline-block />
-    <div v-for="(item, i) in data" :key="i">
-      <button v-for="(subItem, j) in item" :key="j" border="~ grey/10" w="10" h="10" @click="() => click(subItem)">
-        {{ subItem.isMine ? 'X' : subItem.mineNum }}
-      </button>
+    <br>
+    <div inline-block border>
+      <div v-for="(item, i) in data" :key="i">
+        <button v-for="(subItem, j) in item" :key="j" border="~ grey/10" w="10" h="10" va-top @click="() => click(subItem)">
+          {{ subItem.isMine ? 'X' : ((subItem.mineNum as number) > -1 ? subItem.mineNum : '') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>

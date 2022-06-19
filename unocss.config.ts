@@ -32,4 +32,7 @@ export default defineConfig({
   //   transformerDirectives(),
   //   transformerVariantGroup(),
   // ],
+  rules: [
+    ['va-top', { 'vertical-align': 'top' }],
+  ],
 })
